@@ -1,7 +1,3 @@
-<script setup>
-    import { mixinComs } from '../mixin/mixinComs.js'
-</script>
-
 <template>
     <h1>{{ msg }}</h1>
     <p class="import-meta-url">{{ url }}</p>
@@ -12,7 +8,6 @@
     import Button from '../components/button'
 
     export default {
-        mixins: [mixinComs],
         async setup() {
             let url = '', u = null;
 

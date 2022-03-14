@@ -33,11 +33,6 @@
                 count: storeTest.count
             }
         },
-        created: function () {
-            //const v = this.$mount();
-            //document.querySelector('body').appendChild(v.$el)
-            //document.body.insertBefore(this.$el, document.body.firstChild)
-        },
         watch: {
             'storeTest.count': function (newVal, oldVal) {
                 console.log('App Main: ', newVal);
