@@ -28,6 +28,9 @@
                 vx: storeVuex.state.count
             }
         },
+        mounted() {
+            //document.body.insertBefore(this.$el, document.body.firstChild)
+        },
         watch: {
             'storeTest.count': function (newVal, oldVal) {
                 console.log('Home A: ', newVal);
