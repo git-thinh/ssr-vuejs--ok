@@ -1,6 +1,7 @@
 <script setup>
     import { storeTest } from '../store/storeTest.js'
     import { storeVuex } from '../store/storeVuex.js'
+    import { mixinComs } from '../mixin/mixinComs.js'
 
     import PageA from './Page-A.vue'
     import PageB from './Page-B.vue'
@@ -22,6 +23,7 @@
 
 <script>
     export default {
+        mixins: [mixinComs],
         data() {
             return {
                 count: storeTest.count,

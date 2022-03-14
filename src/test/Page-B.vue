@@ -1,5 +1,6 @@
 <script setup>
     import { storeTest } from '../store/storeTest.js'
+    import { mixinComs } from '../mixin/mixinComs.js'
 </script>
 
 <template>
@@ -9,6 +10,7 @@
 
 <script>
     export default {
+        mixins: [mixinComs],
         data() {
             return {
                 count: storeTest.count

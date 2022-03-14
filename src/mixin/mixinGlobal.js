@@ -1,5 +1,5 @@
 ﻿
-export const myMixin = {
+export const mixinGlobal = {
     created: function () { },
     mounted: function () { },
     destroyed: function () { },
