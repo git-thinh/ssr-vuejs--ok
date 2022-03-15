@@ -4,7 +4,13 @@ var vue = require("vue");
 var serverRenderer = require("vue/server-renderer");
 var vueRouter = require("vue-router");
 var path = require("path");
+var _ = require("lodash");
+var broadcastChannel = require("broadcast-channel");
 var vuex = require("vuex");
+function _interopDefaultLegacy(e) {
+  return e && typeof e === "object" && "default" in e ? e : { "default": e };
+}
+var ___default = /* @__PURE__ */ _interopDefaultLegacy(_);
 const storeTest = vue.reactive({
   count: 9,
   update(data) {
@@ -32,6 +38,14 @@ const __default__$3 = {
     }
   },
   methods: {
+    __eventOnMessage: function(m) {
+      console.log("App: __eventOnMessage = ", m);
+    },
+    send_eventBus: function() {
+      const k = new Date().getTime();
+      const channel = new BroadcastChannel(EVENT_BUS__);
+      channel.postMessage(k);
+    },
     update: function() {
       const k = new Date().getTime();
       this.count = k;
@@ -45,9 +59,9 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$3, {
     return (_ctx, _push, _parent, _attrs) => {
       const _component_router_link = vue.resolveComponent("router-link");
       const _component_router_view = vue.resolveComponent("router-view");
-      _push(`<div${serverRenderer.ssrRenderAttrs(_attrs)} data-v-2cfddf34><nav data-v-2cfddf34>`);
+      _push(`<div${serverRenderer.ssrRenderAttrs(_attrs)} data-v-081616a8><nav data-v-081616a8>`);
       _push(serverRenderer.ssrRenderComponent(_component_router_link, { to: "/" }, {
-        default: vue.withCtx((_, _push2, _parent2, _scopeId) => {
+        default: vue.withCtx((_2, _push2, _parent2, _scopeId) => {
           if (_push2) {
             _push2(`Home`);
           } else {
@@ -59,7 +73,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$3, {
         _: 1
       }, _parent));
       _push(serverRenderer.ssrRenderComponent(_component_router_link, { to: "/page-a" }, {
-        default: vue.withCtx((_, _push2, _parent2, _scopeId) => {
+        default: vue.withCtx((_2, _push2, _parent2, _scopeId) => {
           if (_push2) {
             _push2(`Page A`);
           } else {
@@ -71,7 +85,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$3, {
         _: 1
       }, _parent));
       _push(serverRenderer.ssrRenderComponent(_component_router_link, { to: "/page-b" }, {
-        default: vue.withCtx((_, _push2, _parent2, _scopeId) => {
+        default: vue.withCtx((_2, _push2, _parent2, _scopeId) => {
           if (_push2) {
             _push2(`Page B`);
           } else {
@@ -83,7 +97,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$3, {
         _: 1
       }, _parent));
       _push(serverRenderer.ssrRenderComponent(_component_router_link, { to: "/about" }, {
-        default: vue.withCtx((_, _push2, _parent2, _scopeId) => {
+        default: vue.withCtx((_2, _push2, _parent2, _scopeId) => {
           if (_push2) {
             _push2(`About`);
           } else {
@@ -95,7 +109,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$3, {
         _: 1
       }, _parent));
       _push(serverRenderer.ssrRenderComponent(_component_router_link, { to: "/store" }, {
-        default: vue.withCtx((_, _push2, _parent2, _scopeId) => {
+        default: vue.withCtx((_2, _push2, _parent2, _scopeId) => {
           if (_push2) {
             _push2(`Store`);
           } else {
@@ -107,7 +121,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$3, {
         _: 1
       }, _parent));
       _push(serverRenderer.ssrRenderComponent(_component_router_link, { to: "/external" }, {
-        default: vue.withCtx((_, _push2, _parent2, _scopeId) => {
+        default: vue.withCtx((_2, _push2, _parent2, _scopeId) => {
           if (_push2) {
             _push2(`External`);
           } else {
@@ -118,7 +132,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$3, {
         }),
         _: 1
       }, _parent));
-      _push(`</nav><h1 data-v-2cfddf34>App Main: ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button data-v-2cfddf34>update</button><hr data-v-2cfddf34>`);
+      _push(`</nav><h1 data-v-081616a8>App Main: ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button data-v-081616a8>update</button><hr data-v-081616a8>`);
       _push(serverRenderer.ssrRenderComponent(_component_router_view, null, {
         default: vue.withCtx(({ Component }, _push2, _parent2, _scopeId) => {
           if (_push2) {
@@ -151,7 +165,7 @@ _sfc_main$9.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("src/App.vue");
   return _sfc_setup$9 ? _sfc_setup$9(props, ctx) : void 0;
 };
-var App = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["__scopeId", "data-v-2cfddf34"]]);
+var App = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["__scopeId", "data-v-081616a8"]]);
 const pages = { "./test/About.vue": () => Promise.resolve().then(function() {
   return About$1;
 }), "./test/External.vue": () => Promise.resolve().then(function() {
@@ -264,7 +278,7 @@ function _sfc_ssrRender$3(_ctx, _push, _parent, _attrs, $props, $setup, $data, $
   const _component_Button = vue.resolveComponent("Button");
   _push(`<!--[--><h1 data-v-264b4497>${serverRenderer.ssrInterpolate($setup.msg)}</h1><p class="import-meta-url" data-v-264b4497>${serverRenderer.ssrInterpolate($setup.url)}</p>`);
   _push(serverRenderer.ssrRenderComponent(_component_Button, null, {
-    default: vue.withCtx((_, _push2, _parent2, _scopeId) => {
+    default: vue.withCtx((_2, _push2, _parent2, _scopeId) => {
       if (_push2) {
         _push2(`Common Button`);
       } else {
@@ -319,46 +333,52 @@ var External$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProp
   __proto__: null,
   "default": External
 }, Symbol.toStringTag, { value: "Module" }));
+const __config = {
+  event_name: "EVENT_BUS_NAME"
+};
 const GlobalMethods = {
   methods: {
+    __created: function(v, methods) {
+      const arrAll = Object.keys(v);
+      const arrCopy = Object.keys(methods);
+      arrCopy.forEach((key) => {
+        const notExist = ___default["default"].findIndex(arrAll, (o) => o === key) === -1;
+        if (notExist)
+          v[key] = methods[key];
+      });
+      const __id = v.guid();
+      v.__id = __id;
+      v.__events = ["*"];
+      let bc = null;
+      if (typeof v.__eventOnMessage === "function") {
+        bc = new broadcastChannel.BroadcastChannel(__config.event_name);
+        bc.onmessage = v.__eventOnMessage;
+      }
+      v.__bc = bc;
+    },
+    __eventOnMessage: function(data) {
+      console.log("Global: __eventOnMessage = ", data);
+    },
+    __eventSendMessage: function(data, name) {
+      const v = this, bc = v.__bc;
+      if (bc)
+        bc.postMessage({ id: v.__id, name: name || "*", data });
+    },
     guid: function() {
       return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0, v = c == "x" ? r : r & 3 | 8;
         return v.toString(16);
       });
-    },
-    event_register: function() {
-      new BroadcastChannel(EVENT_BUS__);
-    },
-    event_sendBroadCast: function(name, data) {
-      const bc = new BroadcastChannel(EVENT_BUS__);
-      bc.postMessage({ id: this.eventBusId, name, data });
     }
   }
 };
-const __setupComs = {
+const __setupPages = {
   created: function(v) {
+    GlobalMethods.methods.__created(v, GlobalMethods.methods);
   },
   mounted: function(v) {
-    if (v) {
-      const fns = Object.keys(GlobalMethods.methods);
-      console.log(fns);
-    }
   },
   destroyed: function(v) {
-  },
-  guid: function() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c == "x" ? r : r & 3 | 8;
-      return v.toString(16);
-    });
-  },
-  event_register: function() {
-    new BroadcastChannel(EVENT_BUS__);
-  },
-  event_sendBroadCast: function(name, data) {
-    const bc = new BroadcastChannel(EVENT_BUS__);
-    bc.postMessage({ id: this.eventBusId, name, data });
   }
 };
 const storeVuex = vuex.createStore({
@@ -373,11 +393,28 @@ const storeVuex = vuex.createStore({
     }
   }
 });
+const __setupComs = {
+  created: function(v) {
+    GlobalMethods.methods.__created(v, GlobalMethods.methods);
+  },
+  mounted: function(v) {
+  },
+  destroyed: function(v) {
+  }
+};
 const __default__$2 = {
   props: {
     msg: String
   },
-  mounted() {
+  created: function() {
+    __setupComs.created(this);
+  },
+  mounted: function() {
+    const self = this;
+    self.$nextTick(() => {
+    });
+  },
+  destroyed: function() {
   },
   data() {
     return {
@@ -391,6 +428,13 @@ const __default__$2 = {
     }
   },
   methods: {
+    __eventOnMessage: function(m) {
+      console.log("Page A: __eventOnMessage = ", m);
+    },
+    send_eventBus: function() {
+      const k = new Date().getTime();
+      this.__eventSendMessage(k);
+    },
     update: function() {
       const k = new Date().getTime();
       this.count = k;
@@ -402,7 +446,7 @@ const _sfc_main$5 = /* @__PURE__ */ Object.assign(__default__$2, {
   __ssrInlineRender: true,
   setup(__props) {
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<!--[--><h1>Page A: ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button>update</button><!--]-->`);
+      _push(`<!--[--><h1>Page A: ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button>update</button><button>send_eventBus</button><!--]-->`);
     };
   }
 });
@@ -487,9 +531,12 @@ var Store$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePropert
 }, Symbol.toStringTag, { value: "Module" }));
 const __default__ = {
   created: function() {
+    __setupPages.created(this);
   },
   mounted: function() {
-    __setupComs.mounted(this);
+    const self = this;
+    self.$nextTick(() => {
+    });
   },
   destroyed: function() {
   },
@@ -506,6 +553,9 @@ const __default__ = {
     }
   },
   methods: {
+    __eventOnMessage: function(m) {
+      console.log("Home: __eventOnMessage = ", m);
+    },
     send_eventBus: function() {
       const k = new Date().getTime();
       const channel = new BroadcastChannel(EVENT_BUS__);
@@ -586,7 +636,7 @@ const _sfc_main$1 = {
       _push(serverRenderer.ssrRenderComponent(vue.unref(Foo2), null, null, _parent));
       _push(`<p class="virtual" data-v-8abb0530>msg from virtual module: ${serverRenderer.ssrInterpolate(vue.unref(foo$1).msg)}</p><p class="inter" data-v-8abb0530>this will be styled with a font-face</p><p class="import-meta-url" data-v-8abb0530>${serverRenderer.ssrInterpolate(vue.unref(state).url)}</p><p class="protocol" data-v-8abb0530>${serverRenderer.ssrInterpolate(vue.unref(state).protocol)}</p><p class="nested-virtual" data-v-8abb0530>msg from nested virtual module: ${serverRenderer.ssrInterpolate(vue.unref(msg))}</p>`);
       _push(serverRenderer.ssrRenderComponent(vue.unref(Button), null, {
-        default: vue.withCtx((_, _push2, _parent2, _scopeId) => {
+        default: vue.withCtx((_2, _push2, _parent2, _scopeId) => {
           if (_push2) {
             _push2(`CommonButton`);
           } else {

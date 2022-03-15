@@ -40,6 +40,14 @@
             }
         },
         methods: {
+            __eventOnMessage: function (m) {
+                console.log('App: __eventOnMessage = ', m);
+            },
+            send_eventBus: function () {
+                const k = new Date().getTime();
+                const channel = new BroadcastChannel(EVENT_BUS__);
+                channel.postMessage(k);
+            },
             update: function () {
                 const k = new Date().getTime();
                 this.count = k;

@@ -1,5 +1,5 @@
 <script setup>
-    import { __setupComs } from '../mixin/__setupComs.js'
+    import { __setupPages } from '../mixin/__setupPages.js'
     import { storeTest } from '../store/storeTest.js'
     import { storeVuex } from '../store/storeVuex.js'
 
@@ -25,13 +25,17 @@
 <script>
     export default {
         created: function () {
-            __setupComs.created(this);
+            __setupPages.created(this);
         },
         mounted: function () {
-            __setupComs.mounted(this);
+            __setupPages.mounted(this);
+
+            const self = this;
+            //console.log('Home: mounted =', this.guid());
+            self.$nextTick(() => {});
         },
         destroyed: function () {
-            __setupComs.destroyed(this);
+            __setupPages.destroyed(this);
         },
         data() {
             return {
@@ -46,6 +50,9 @@
             }
         },
         methods: {
+            __eventOnMessage: function (m) {
+                console.log('Home: __eventOnMessage = ', m);
+            },
             send_eventBus: function () {
                 const k = new Date().getTime();
                 const channel = new BroadcastChannel(EVENT_BUS__);
