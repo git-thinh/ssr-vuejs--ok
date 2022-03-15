@@ -6,9 +6,9 @@ export const MixinApp = {
         const v = this;
         if (window != null && window.__appInited != true) {
             window.__appInited = true;
-            console.log('Mixin App: created ...');
-
             GlobalMethods.methods.__created(v, GlobalMethods.methods);
+
+            console.log('Mixin App: created ...');
         }
     },
     mounted: function () {},

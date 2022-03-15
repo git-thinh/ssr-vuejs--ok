@@ -6,15 +6,35 @@ var vueRouter = require("vue-router");
 var path = require("path");
 var _ = require("lodash");
 var broadcastChannel = require("broadcast-channel");
-var vuex = require("vuex");
 function _interopDefaultLegacy(e) {
   return e && typeof e === "object" && "default" in e ? e : { "default": e };
 }
 var ___default = /* @__PURE__ */ _interopDefaultLegacy(_);
+const __config = {
+  event_name: "EVENT_BUS_NAME",
+  event_store: "EVENT_STORE_CHANGED"
+};
+const __broadcast = function(name, data, bc, vue2) {
+  const m = {
+    id: __config.event_store,
+    name,
+    data,
+    send_id: null
+  };
+  if (vue2 != null)
+    m.send_id = vue2.__id;
+  let it = bc;
+  if (it === null)
+    it = new broadcastChannel.BroadcastChannel(__config.event_name);
+  it.postMessage(m);
+  return it;
+};
 const storeTest = vue.reactive({
+  __bc: null,
   count: 9,
-  update(data) {
+  updateCount(vue2, data) {
     this.count = data;
+    this.__bc = __broadcast("storeTest.count", data, this.__bc, vue2);
   }
 });
 var App_vue_vue_type_style_index_0_scoped_true_lang = "";
@@ -25,41 +45,39 @@ var _export_sfc = (sfc, props) => {
   }
   return target;
 };
-const __default__$3 = {
+const __default__$4 = {
   data() {
     return {
       count: storeTest.count
     };
   },
-  watch: {
-    "storeTest.count": function(newVal, oldVal) {
-      console.log("App Main: ", newVal);
-      this.count = newVal;
-    }
-  },
   methods: {
+    "storeTest.count": function(newVal) {
+      console.log("App.Vue: storeTest.count = ", newVal);
+      this.count = newVal;
+    },
     __eventOnMessage: function(m) {
-      console.log("App: __eventOnMessage = ", m);
+      console.log("App.Vue: __eventOnMessage = ", m);
     },
     send_eventBus: function() {
       const k = new Date().getTime();
       const channel = new BroadcastChannel(EVENT_BUS__);
       channel.postMessage(k);
     },
-    update: function() {
+    updateCount: function() {
       const k = new Date().getTime();
       this.count = k;
-      storeTest.update(k);
+      storeTest.updateCount(this, k);
     }
   }
 };
-const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$3, {
+const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$4, {
   __ssrInlineRender: true,
   setup(__props) {
     return (_ctx, _push, _parent, _attrs) => {
       const _component_router_link = vue.resolveComponent("router-link");
       const _component_router_view = vue.resolveComponent("router-view");
-      _push(`<div${serverRenderer.ssrRenderAttrs(_attrs)} data-v-081616a8><nav data-v-081616a8>`);
+      _push(`<div${serverRenderer.ssrRenderAttrs(_attrs)} data-v-22587686><nav data-v-22587686>`);
       _push(serverRenderer.ssrRenderComponent(_component_router_link, { to: "/" }, {
         default: vue.withCtx((_2, _push2, _parent2, _scopeId) => {
           if (_push2) {
@@ -132,7 +150,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$3, {
         }),
         _: 1
       }, _parent));
-      _push(`</nav><h1 data-v-081616a8>App Main: ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button data-v-081616a8>update</button><hr data-v-081616a8>`);
+      _push(`</nav><h1 data-v-22587686>App: count = ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button data-v-22587686>Update Count</button><button data-v-22587686>Send Event</button><hr data-v-22587686>`);
       _push(serverRenderer.ssrRenderComponent(_component_router_view, null, {
         default: vue.withCtx(({ Component }, _push2, _parent2, _scopeId) => {
           if (_push2) {
@@ -165,7 +183,7 @@ _sfc_main$9.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("src/App.vue");
   return _sfc_setup$9 ? _sfc_setup$9(props, ctx) : void 0;
 };
-var App = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["__scopeId", "data-v-081616a8"]]);
+var App = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["__scopeId", "data-v-22587686"]]);
 const pages = { "./test/About.vue": () => Promise.resolve().then(function() {
   return About$1;
 }), "./test/External.vue": () => Promise.resolve().then(function() {
@@ -274,7 +292,7 @@ const _sfc_main$8 = {
     Button
   }
 };
-function _sfc_ssrRender$3(_ctx, _push, _parent, _attrs, $props, $setup, $data, $options) {
+function _sfc_ssrRender$2(_ctx, _push, _parent, _attrs, $props, $setup, $data, $options) {
   const _component_Button = vue.resolveComponent("Button");
   _push(`<!--[--><h1 data-v-264b4497>${serverRenderer.ssrInterpolate($setup.msg)}</h1><p class="import-meta-url" data-v-264b4497>${serverRenderer.ssrInterpolate($setup.url)}</p>`);
   _push(serverRenderer.ssrRenderComponent(_component_Button, null, {
@@ -297,13 +315,13 @@ _sfc_main$8.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("src/test/About.vue");
   return _sfc_setup$8 ? _sfc_setup$8(props, ctx) : void 0;
 };
-var About = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["ssrRender", _sfc_ssrRender$3], ["__scopeId", "data-v-264b4497"]]);
+var About = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["ssrRender", _sfc_ssrRender$2], ["__scopeId", "data-v-264b4497"]]);
 var About$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   "default": About
 }, Symbol.toStringTag, { value: "Module" }));
 const _sfc_main$7 = {};
-function _sfc_ssrRender$2(_ctx, _push, _parent, _attrs) {
+function _sfc_ssrRender$1(_ctx, _push, _parent, _attrs) {
   _push(`<div${serverRenderer.ssrRenderAttrs(_attrs)}>Example external component content</div>`);
 }
 const _sfc_setup$7 = _sfc_main$7.setup;
@@ -312,13 +330,13 @@ _sfc_main$7.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/example-external-component/ExampleExternalComponent.vue");
   return _sfc_setup$7 ? _sfc_setup$7(props, ctx) : void 0;
 };
-var ExampleExternalComponent = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["ssrRender", _sfc_ssrRender$2]]);
+var ExampleExternalComponent = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["ssrRender", _sfc_ssrRender$1]]);
 const _sfc_main$6 = {
   components: {
     ExampleExternalComponent
   }
 };
-function _sfc_ssrRender$1(_ctx, _push, _parent, _attrs, $props, $setup, $data, $options) {
+function _sfc_ssrRender(_ctx, _push, _parent, _attrs, $props, $setup, $data, $options) {
   const _component_ExampleExternalComponent = vue.resolveComponent("ExampleExternalComponent");
   _push(serverRenderer.ssrRenderComponent(_component_ExampleExternalComponent, _attrs, null, _parent));
 }
@@ -328,14 +346,11 @@ _sfc_main$6.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("src/test/External.vue");
   return _sfc_setup$6 ? _sfc_setup$6(props, ctx) : void 0;
 };
-var External = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["ssrRender", _sfc_ssrRender$1]]);
+var External = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["ssrRender", _sfc_ssrRender]]);
 var External$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   "default": External
 }, Symbol.toStringTag, { value: "Module" }));
-const __config = {
-  event_name: "EVENT_BUS_NAME"
-};
 const GlobalMethods = {
   methods: {
     __created: function(v, methods) {
@@ -349,20 +364,29 @@ const GlobalMethods = {
       const __id = v.guid();
       v.__id = __id;
       v.__events = ["*"];
-      let bc = null;
-      if (typeof v.__eventOnMessage === "function") {
-        bc = new broadcastChannel.BroadcastChannel(__config.event_name);
-        bc.onmessage = v.__eventOnMessage;
-      }
+      const bc = new broadcastChannel.BroadcastChannel(__config.event_name);
+      bc.onmessage = v.__eventOnMessage__;
       v.__bc = bc;
     },
-    __eventOnMessage: function(data) {
-      console.log("Global: __eventOnMessage = ", data);
+    __eventOnMessage__: function(m) {
+      const v = this;
+      if (m) {
+        if (m.id && m.id === __config.event_store) {
+          if (m.name != null && m.name.length > 0 && typeof v[m.name] === "function" && v.__id != m.send_id)
+            v[m.name](m.data);
+        } else if (typeof v["__eventOnMessage"] === "function")
+          v.__eventOnMessage(m);
+      }
     },
     __eventSendMessage: function(data, name) {
       const v = this, bc = v.__bc;
       if (bc)
-        bc.postMessage({ id: v.__id, name: name || "*", data });
+        bc.postMessage({
+          id: this.guid(),
+          send_id: v.__id,
+          name: name || "*",
+          data
+        });
     },
     guid: function() {
       return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
@@ -381,18 +405,6 @@ const __setupPages = {
   destroyed: function(v) {
   }
 };
-const storeVuex = vuex.createStore({
-  state() {
-    return {
-      count: 5
-    };
-  },
-  actions: {
-    update({ commit, state }, k) {
-      state.count = k;
-    }
-  }
-});
 const __setupComs = {
   created: function(v) {
     GlobalMethods.methods.__created(v, GlobalMethods.methods);
@@ -402,51 +414,49 @@ const __setupComs = {
   destroyed: function(v) {
   }
 };
-const __default__$2 = {
-  props: {
-    msg: String
+const __default__$3 = {
+  destroyed: function() {
   },
   created: function() {
     __setupComs.created(this);
+  },
+  props: {
+    msg: String
   },
   mounted: function() {
     const self = this;
     self.$nextTick(() => {
     });
   },
-  destroyed: function() {
-  },
   data() {
     return {
       count: storeTest.count
     };
   },
-  watch: {
-    "storeTest.count": function(newVal, oldVal) {
-      console.log("Page A: ", newVal);
-      this.count = newVal;
-    }
-  },
   methods: {
+    "storeTest.count": function(newVal) {
+      console.log("PageA.Vue: storeTest.count = ", newVal);
+      this.count = newVal;
+    },
     __eventOnMessage: function(m) {
-      console.log("Page A: __eventOnMessage = ", m);
+      console.log("PageA.Vue: __eventOnMessage = ", m);
     },
     send_eventBus: function() {
       const k = new Date().getTime();
       this.__eventSendMessage(k);
     },
-    update: function() {
+    updateCount: function() {
       const k = new Date().getTime();
       this.count = k;
-      storeTest.update(k);
+      storeTest.updateCount(this, k);
     }
   }
 };
-const _sfc_main$5 = /* @__PURE__ */ Object.assign(__default__$2, {
+const _sfc_main$5 = /* @__PURE__ */ Object.assign(__default__$3, {
   __ssrInlineRender: true,
   setup(__props) {
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<!--[--><h1>Page A: ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button>update</button><button>send_eventBus</button><!--]-->`);
+      _push(`<!--[--><h1>Page A: count = ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button>Update Count</button><button>Send Event</button><!--]-->`);
     };
   }
 });
@@ -460,31 +470,41 @@ var PageA = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty(
   __proto__: null,
   "default": _sfc_main$5
 }, Symbol.toStringTag, { value: "Module" }));
-const __default__$1 = {
+const __default__$2 = {
+  destroyed: function() {
+  },
+  created: function() {
+    __setupComs.created(this);
+  },
   data() {
     return {
       count: storeTest.count
     };
   },
-  watch: {
-    "storeTest.count": function(newVal, oldVal) {
-      console.log("Page B: ", newVal);
-      this.count = newVal;
-    }
-  },
   methods: {
-    update: function() {
+    "storeTest.count": function(newVal) {
+      console.log("PageB.Vue: storeTest.count = ", newVal);
+      this.count = newVal;
+    },
+    __eventOnMessage: function(m) {
+      console.log("PageB.Vue: __eventOnMessage = ", m);
+    },
+    send_eventBus: function() {
+      const k = new Date().getTime();
+      this.__eventSendMessage(k);
+    },
+    updateCount: function() {
       const k = new Date().getTime();
       this.count = k;
-      storeTest.update(k);
+      storeTest.updateCount(this, k);
     }
   }
 };
-const _sfc_main$4 = /* @__PURE__ */ Object.assign(__default__$1, {
+const _sfc_main$4 = /* @__PURE__ */ Object.assign(__default__$2, {
   __ssrInlineRender: true,
   setup(__props) {
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<!--[--><h1>Page B: ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button>update</button><!--]-->`);
+      _push(`<!--[--><h1>Page B: count = ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button>Update Count</button><button>Send Event</button><!--]-->`);
     };
   }
 });
@@ -499,37 +519,58 @@ var PageB = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty(
   "default": _sfc_main$4
 }, Symbol.toStringTag, { value: "Module" }));
 var Store_vue_vue_type_style_index_0_scoped_true_lang = "";
-const _sfc_main$3 = {
+const __default__$1 = {
+  destroyed: function() {
+  },
+  created: function() {
+    __setupComs.created(this);
+  },
   data: function() {
-    return {
-      foo: "bar",
-      vx: storeVuex.state.count
-    };
+    return { count: 555 };
+  },
+  mounted: function() {
   },
   methods: {
-    update_vx: function() {
+    "storeTest.count": function(newVal) {
+      console.log("Store.Vue: storeTest.count = ", newVal);
+      this.count = newVal;
+    },
+    __eventOnMessage: function(m) {
+      console.log("Store.Vue: __eventOnMessage = ", m);
+    },
+    send_eventBus: function() {
       const k = new Date().getTime();
-      storeVuex.dispatch("update", k);
-      console.log("Store Vuex: ", storeVuex.state.count);
-      this.vx = storeVuex.state.count;
+      this.__eventSendMessage(k);
+    },
+    updateCount: function() {
+      const k = new Date().getTime();
+      this.count = k;
+      storeTest.updateCount(this, k);
     }
   }
 };
-function _sfc_ssrRender(_ctx, _push, _parent, _attrs, $props, $setup, $data, $options) {
-  _push(`<!--[--><h1 data-v-1f81f7c2>${serverRenderer.ssrInterpolate(_ctx.foo)}</h1><h1 data-v-1f81f7c2>Store Vuex: ${serverRenderer.ssrInterpolate(_ctx.vx)}</h1><button data-v-1f81f7c2>update vuex</button><!--]-->`);
-}
+const _sfc_main$3 = /* @__PURE__ */ Object.assign(__default__$1, {
+  __ssrInlineRender: true,
+  setup(__props) {
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<!--[--><h1 data-v-604d3d76>Store: count = ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button data-v-604d3d76>Update Count</button><button data-v-604d3d76>Send Event</button><!--]-->`);
+    };
+  }
+});
 const _sfc_setup$3 = _sfc_main$3.setup;
 _sfc_main$3.setup = (props, ctx) => {
   const ssrContext = vue.useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("src/test/Store.vue");
   return _sfc_setup$3 ? _sfc_setup$3(props, ctx) : void 0;
 };
-var Store = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["ssrRender", _sfc_ssrRender], ["__scopeId", "data-v-1f81f7c2"]]);
+var Store = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-604d3d76"]]);
 var Store$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   "default": Store
 }, Symbol.toStringTag, { value: "Module" }));
 const __default__ = {
+  destroyed: function() {
+  },
   created: function() {
     __setupPages.created(this);
   },
@@ -538,39 +579,27 @@ const __default__ = {
     self.$nextTick(() => {
     });
   },
-  destroyed: function() {
-  },
   data() {
     return {
-      count: storeTest.count,
-      vx: storeVuex.state.count
+      count: storeTest.count
     };
   },
-  watch: {
-    "storeTest.count": function(newVal, oldVal) {
-      console.log("Home A: ", newVal);
-      this.count = newVal;
-    }
-  },
   methods: {
+    "storeTest.count": function(newVal) {
+      console.log("Home.Vue: storeTest.count = ", newVal);
+      this.count = newVal;
+    },
     __eventOnMessage: function(m) {
-      console.log("Home: __eventOnMessage = ", m);
+      console.log("Home.Vue: __eventOnMessage = ", m);
     },
     send_eventBus: function() {
       const k = new Date().getTime();
-      const channel = new BroadcastChannel(EVENT_BUS__);
-      channel.postMessage(k);
+      this.__eventSendMessage(k);
     },
-    update: function() {
+    updateCount: function() {
       const k = new Date().getTime();
       this.count = k;
-      storeTest.update(k);
-    },
-    update_vx: function() {
-      const k = new Date().getTime();
-      storeVuex.dispatch("update", k);
-      console.log("Store Vuex: ", storeVuex.state.count);
-      this.vx = storeVuex.state.count;
+      storeTest.updateCount(this, k);
     }
   }
 };
@@ -578,7 +607,7 @@ const _sfc_main$2 = /* @__PURE__ */ Object.assign(__default__, {
   __ssrInlineRender: true,
   setup(__props) {
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<!--[--><h1>Home: ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button>update</button><h1>Store Vuex: ${serverRenderer.ssrInterpolate(_ctx.vx)}</h1><button>update vuex</button><button>send_eventBus</button><hr>`);
+      _push(`<!--[--><h1>Home: count = ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button>Update Count</button><button>Send Event</button><hr>`);
       _push(serverRenderer.ssrRenderComponent(_sfc_main$5, null, null, _parent));
       _push(`<hr>`);
       _push(serverRenderer.ssrRenderComponent(_sfc_main$4, null, null, _parent));

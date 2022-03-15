@@ -13,8 +13,9 @@
             <router-link to="/external">External</router-link>
         </nav>
 
-        <h1>App Main: {{count}}</h1>
-        <button @click="update">update</button>
+        <h1>App: count = {{count}}</h1>
+        <button @click="updateCount">Update Count</button>
+        <button @click="send_eventBus">Send Event</button>
 
         <hr />
 
@@ -33,25 +34,29 @@
                 count: storeTest.count
             }
         },
-        watch: {
-            'storeTest.count': function (newVal, oldVal) {
-                console.log('App Main: ', newVal);
-                this.count = newVal;
-            }
-        },
         methods: {
-            __eventOnMessage: function (m) {
-                console.log('App: __eventOnMessage = ', m);
+            '*': function (m) {
+                console.log('App.Vue: [*] = ', m.type, m.data);
+            },
+            'storeTest.count': function (m) {
+                console.log('App.Vue: storeTest.count = ', m);
+                this.count = m.data;
             },
             send_eventBus: function () {
-                const k = new Date().getTime();
-                const channel = new BroadcastChannel(EVENT_BUS__);
-                channel.postMessage(k);
+                this.__eventSendMessage({
+                    send_id: this.__id,
+                    data: new Date().getTime()
+                });
             },
-            update: function () {
+            updateCount: function () {
                 const k = new Date().getTime();
                 this.count = k;
-                storeTest.update(k);
+                storeTest.updateCount({
+                    send_id: this.__id,
+                    name: 'storeTest.count',
+                    type: '',
+                    data: k
+                });
             }
         }
     }

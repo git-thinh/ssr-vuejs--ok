@@ -4,18 +4,18 @@
 </script>
 
 <template>
-    <h1>Page A: {{count}}</h1>
-    <button @click="update">update</button>
-    <button @click="send_eventBus">send_eventBus</button>
+    <h1>Page A: count = {{count}}</h1>
+    <button @click="updateCount">Update Count</button>
+    <button @click="send_eventBus">Send Event</button>
 </template>
 
 <script>
     export default {
+        destroyed: function () { __setupComs.destroyed(this); },
+        created: function () { __setupComs.created(this); },
+        //--------------------------------------------------------
         props: {
             msg: String
-        },
-        created: function () {
-            __setupComs.created(this);
         },
         mounted: function () {
             __setupComs.mounted(this);
@@ -24,32 +24,34 @@
             //console.log('Page A: mounted =', self);
             self.$nextTick(() => {});
         },
-        destroyed: function () {
-            __setupComs.destroyed(this);
-        },
         data() {
             return {
                 count: storeTest.count
             }
         },
-        watch: {
-            'storeTest.count': function (newVal, oldVal) {
-                console.log('Page A: ', newVal);
-                this.count = newVal;
-            }
-        },
         methods: {
-            __eventOnMessage: function (m) {
-                console.log('Page A: __eventOnMessage = ', m);
+            '*': function (m) {
+                console.log('PageA.Vue: [*] = ', m.data);
+            },
+            'storeTest.count': function (m) {
+                console.log('PageA.Vue: storeTest.count = ', m);
+                this.count = m.data;
             },
             send_eventBus: function () {
-                const k = new Date().getTime();
-                this.__eventSendMessage(k);
+                this.__eventSendMessage({
+                    send_id: this.__id,
+                    data: new Date().getTime()
+                });
             },
-            update: function () {
+            updateCount: function () {
                 const k = new Date().getTime();
                 this.count = k;
-                storeTest.update(k);
+                storeTest.updateCount({
+                    send_id: this.__id,
+                    name: 'storeTest.count',
+                    type: '',
+                    data: k
+                });
             }
         }
     }

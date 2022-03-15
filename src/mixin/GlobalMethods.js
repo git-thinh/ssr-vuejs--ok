@@ -17,20 +17,30 @@ export const GlobalMethods = {
             v.__id = __id;
 
             // Event setup
-            v.__events = ['*'];
-            let bc = null;
-            if (typeof v.__eventOnMessage === 'function') {
-                bc = new BroadcastChannel(__config.event_name);
-                bc.onmessage = v.__eventOnMessage;
-            }
+            const bc = new BroadcastChannel(__config.event_name);
+            bc.onmessage = v.__eventOnMessage;
             v.__bc = bc;
         },
-        __eventOnMessage: function (data) {
-            console.log('Global: __eventOnMessage = ', data);
+        __eventOnMessage: function (m) {
+            const v = this;
+            if (m) {
+                //console.log('Global: message = ', m);
+                if (v.__id != m.send_id) {
+                    if (m.name != null && m.name.length > 0
+                        && typeof v[m.name] === 'function'
+                        && m.store_updated === true) v[m.name](m.data);
+                    else if (typeof v['*'] === 'function') v['*'](m);
+                }
+            }
         },
         __eventSendMessage: function (data, name) {
             const v = this, bc = v.__bc;
-            if(bc) bc.postMessage({ id: v.__id, name: name || '*', data: data });
+            if (bc) bc.postMessage({
+                id: this.guid(),
+                send_id: v.__id,
+                name: name || '*',
+                data: data
+            });
         },
         //------------------------------------------------------
         guid: function () {
