@@ -16,4 +16,4 @@ npm run build
 - Add "type": "module" to package.json
 - node render.js
 
-
+ "example-external-component": "file:example-external-component",
