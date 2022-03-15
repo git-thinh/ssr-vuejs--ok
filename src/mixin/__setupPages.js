@@ -1,4 +1,5 @@
-﻿import { GlobalMethods } from './GlobalMethods.js';
+﻿import _ from 'lodash';
+import { GlobalMethods } from './GlobalMethods.js';
 
 export const __setupPages = {
     created: function (v) {

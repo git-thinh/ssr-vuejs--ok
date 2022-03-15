@@ -36,15 +36,16 @@
         },
         methods: {
             '*': function (m) {
-                console.log('App.Vue: [*] = ', m.type, m.data);
+                console.log('App.Vue: [*] = ', m.data);
             },
             'storeTest.count': function (m) {
                 console.log('App.Vue: storeTest.count = ', m);
                 this.count = m.data;
             },
             send_eventBus: function () {
-                this.__eventSendMessage({
+                this.__sendMessage({
                     send_id: this.__id,
+                    callback: '*',
                     data: new Date().getTime()
                 });
             },
@@ -53,7 +54,7 @@
                 this.count = k;
                 storeTest.updateCount({
                     send_id: this.__id,
-                    name: 'storeTest.count',
+                    callback: 'storeTest.count',
                     type: '',
                     data: k
                 });

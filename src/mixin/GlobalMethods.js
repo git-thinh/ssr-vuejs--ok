@@ -1,46 +1,34 @@
 ﻿import _ from 'lodash';
 import { __config } from '../__config.js';
-import { BroadcastChannel } from 'broadcast-channel';
+import { __callback } from './__callback.js';
 
 export const GlobalMethods = {
     methods: {
         __created: function (v, methods) {
-            const arrAll = Object.keys(v);
             const arrCopy = Object.keys(methods);
-            //console.log(arrAll, arrCopy);
             arrCopy.forEach(key => {
-                const notExist = _.findIndex(arrAll, o => o === key) === -1;
-                if (notExist) v[key] = methods[key];
+                if (typeof v[key] === 'undefined')
+                    v[key] = methods[key];
             });
 
             const __id = v.guid();
             v.__id = __id;
 
-            // Event setup
-            const bc = new BroadcastChannel(__config.event_name);
-            bc.onmessage = v.__eventOnMessage;
-            v.__bc = bc;
+            if (typeof v['__onMessage'] === 'function')
+                __callback.update(__id, v['__onMessage']);
         },
-        __eventOnMessage: function (m) {
+        __onMessage: function (m) {
             const v = this;
             if (m) {
                 //console.log('Global: message = ', m);
-                if (v.__id != m.send_id) {
-                    if (m.name != null && m.name.length > 0
-                        && typeof v[m.name] === 'function'
-                        && m.store_updated === true) v[m.name](m.data);
-                    else if (typeof v['*'] === 'function') v['*'](m);
-                }
+                if (v.__id != m.send_id
+                    && m.callback != null && m.callback.length > 0
+                    && typeof v[m.callback] === 'function')
+                    v[m.callback](m);
             }
         },
-        __eventSendMessage: function (data, name) {
-            const v = this, bc = v.__bc;
-            if (bc) bc.postMessage({
-                id: this.guid(),
-                send_id: v.__id,
-                name: name || '*',
-                data: data
-            });
+        __sendMessage: function (m) {
+            __callback.callNotIds(m, [this.__id]);                        
         },
         //------------------------------------------------------
         guid: function () {

@@ -5,36 +5,42 @@ var serverRenderer = require("vue/server-renderer");
 var vueRouter = require("vue-router");
 var path = require("path");
 var _ = require("lodash");
-var broadcastChannel = require("broadcast-channel");
 function _interopDefaultLegacy(e) {
   return e && typeof e === "object" && "default" in e ? e : { "default": e };
 }
 var ___default = /* @__PURE__ */ _interopDefaultLegacy(_);
-const __config = {
-  event_name: "EVENT_BUS_NAME",
-  event_store: "EVENT_STORE_CHANGED"
-};
-const __broadcast = function(name, data, bc, vue2) {
-  const m = {
-    id: __config.event_store,
-    name,
-    data,
-    send_id: null
-  };
-  if (vue2 != null)
-    m.send_id = vue2.__id;
-  let it = bc;
-  if (it === null)
-    it = new broadcastChannel.BroadcastChannel(__config.event_name);
-  it.postMessage(m);
-  return it;
-};
+const __callback = vue.reactive({
+  items: {},
+  update: function(id, fn) {
+    this.items[id] = fn;
+  },
+  clearAll: function() {
+    this.items = {};
+  },
+  callNotIds: function(m, notIDs) {
+    const items = this.items;
+    let a = Object.keys(items);
+    a = ___default["default"].filter(a, (o) => items.hasOwnProperty(o) && typeof items[o] === "function");
+    if (notIDs != null && Array.isArray(notIDs) && notIDs.length > 0)
+      a = ___default["default"].filter(a, (o) => ___default["default"].findIndex(notIDs, (j) => j === o) === -1);
+    const json = JSON.stringify(m);
+    for (let i = 0; i < a.length; i++) {
+      const o = JSON.parse(json), id = a[i];
+      const fn = items[id];
+      if (fn != null)
+        setTimeout(function() {
+          fn(o);
+        }, 1);
+    }
+  }
+});
 const storeTest = vue.reactive({
-  __bc: null,
   count: 9,
-  updateCount(vue2, data) {
-    this.count = data;
-    this.__bc = __broadcast("storeTest.count", data, this.__bc, vue2);
+  updateCount(m) {
+    if (m != null) {
+      this.count = m.data;
+      __callback.callNotIds(m);
+    }
   }
 });
 var App_vue_vue_type_style_index_0_scoped_true_lang = "";
@@ -52,32 +58,39 @@ const __default__$4 = {
     };
   },
   methods: {
-    "storeTest.count": function(newVal) {
-      console.log("App.Vue: storeTest.count = ", newVal);
-      this.count = newVal;
+    "*": function(m) {
+      console.log("App.Vue: [*] = ", m.data);
     },
-    __eventOnMessage: function(m) {
-      console.log("App.Vue: __eventOnMessage = ", m);
+    "storeTest.count": function(m) {
+      console.log("App.Vue: storeTest.count = ", m);
+      this.count = m.data;
     },
     send_eventBus: function() {
-      const k = new Date().getTime();
-      const channel = new BroadcastChannel(EVENT_BUS__);
-      channel.postMessage(k);
+      this.__sendMessage({
+        send_id: this.__id,
+        callback: "*",
+        data: new Date().getTime()
+      });
     },
     updateCount: function() {
       const k = new Date().getTime();
       this.count = k;
-      storeTest.updateCount(this, k);
+      storeTest.updateCount({
+        send_id: this.__id,
+        callback: "storeTest.count",
+        type: "",
+        data: k
+      });
     }
   }
 };
-const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$4, {
+const _sfc_main$8 = /* @__PURE__ */ Object.assign(__default__$4, {
   __ssrInlineRender: true,
   setup(__props) {
     return (_ctx, _push, _parent, _attrs) => {
       const _component_router_link = vue.resolveComponent("router-link");
       const _component_router_view = vue.resolveComponent("router-view");
-      _push(`<div${serverRenderer.ssrRenderAttrs(_attrs)} data-v-22587686><nav data-v-22587686>`);
+      _push(`<div${serverRenderer.ssrRenderAttrs(_attrs)} data-v-f39e144a><nav data-v-f39e144a>`);
       _push(serverRenderer.ssrRenderComponent(_component_router_link, { to: "/" }, {
         default: vue.withCtx((_2, _push2, _parent2, _scopeId) => {
           if (_push2) {
@@ -150,7 +163,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$4, {
         }),
         _: 1
       }, _parent));
-      _push(`</nav><h1 data-v-22587686>App: count = ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button data-v-22587686>Update Count</button><button data-v-22587686>Send Event</button><hr data-v-22587686>`);
+      _push(`</nav><h1 data-v-f39e144a>App: count = ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button data-v-f39e144a>Update Count</button><button data-v-f39e144a>Send Event</button><hr data-v-f39e144a>`);
       _push(serverRenderer.ssrRenderComponent(_component_router_view, null, {
         default: vue.withCtx(({ Component }, _push2, _parent2, _scopeId) => {
           if (_push2) {
@@ -177,13 +190,13 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign(__default__$4, {
     };
   }
 });
-const _sfc_setup$9 = _sfc_main$9.setup;
-_sfc_main$9.setup = (props, ctx) => {
+const _sfc_setup$8 = _sfc_main$8.setup;
+_sfc_main$8.setup = (props, ctx) => {
   const ssrContext = vue.useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("src/App.vue");
-  return _sfc_setup$9 ? _sfc_setup$9(props, ctx) : void 0;
+  return _sfc_setup$8 ? _sfc_setup$8(props, ctx) : void 0;
 };
-var App = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["__scopeId", "data-v-22587686"]]);
+var App = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["__scopeId", "data-v-f39e144a"]]);
 const pages = { "./test/About.vue": () => Promise.resolve().then(function() {
   return About$1;
 }), "./test/External.vue": () => Promise.resolve().then(function() {
@@ -279,7 +292,7 @@ var Button = vue.defineComponent({
   }
 });
 var About_vue_vue_type_style_index_0_scoped_true_lang = "";
-const _sfc_main$8 = {
+const _sfc_main$7 = {
   async setup() {
     let url = "";
     url = typeof document === "undefined" ? new (require("url")).URL("file:" + __filename).href : document.currentScript && document.currentScript.src || new URL("entry-server.js", document.baseURI).href;
@@ -292,7 +305,7 @@ const _sfc_main$8 = {
     Button
   }
 };
-function _sfc_ssrRender$2(_ctx, _push, _parent, _attrs, $props, $setup, $data, $options) {
+function _sfc_ssrRender$1(_ctx, _push, _parent, _attrs, $props, $setup, $data, $options) {
   const _component_Button = vue.resolveComponent("Button");
   _push(`<!--[--><h1 data-v-264b4497>${serverRenderer.ssrInterpolate($setup.msg)}</h1><p class="import-meta-url" data-v-264b4497>${serverRenderer.ssrInterpolate($setup.url)}</p>`);
   _push(serverRenderer.ssrRenderComponent(_component_Button, null, {
@@ -309,33 +322,18 @@ function _sfc_ssrRender$2(_ctx, _push, _parent, _attrs, $props, $setup, $data, $
   }, _parent));
   _push(`<!--]-->`);
 }
-const _sfc_setup$8 = _sfc_main$8.setup;
-_sfc_main$8.setup = (props, ctx) => {
+const _sfc_setup$7 = _sfc_main$7.setup;
+_sfc_main$7.setup = (props, ctx) => {
   const ssrContext = vue.useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("src/test/About.vue");
-  return _sfc_setup$8 ? _sfc_setup$8(props, ctx) : void 0;
+  return _sfc_setup$7 ? _sfc_setup$7(props, ctx) : void 0;
 };
-var About = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["ssrRender", _sfc_ssrRender$2], ["__scopeId", "data-v-264b4497"]]);
+var About = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["ssrRender", _sfc_ssrRender$1], ["__scopeId", "data-v-264b4497"]]);
 var About$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   "default": About
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$7 = {};
-function _sfc_ssrRender$1(_ctx, _push, _parent, _attrs) {
-  _push(`<div${serverRenderer.ssrRenderAttrs(_attrs)}>Example external component content</div>`);
-}
-const _sfc_setup$7 = _sfc_main$7.setup;
-_sfc_main$7.setup = (props, ctx) => {
-  const ssrContext = vue.useSSRContext();
-  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/example-external-component/ExampleExternalComponent.vue");
-  return _sfc_setup$7 ? _sfc_setup$7(props, ctx) : void 0;
-};
-var ExampleExternalComponent = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["ssrRender", _sfc_ssrRender$1]]);
-const _sfc_main$6 = {
-  components: {
-    ExampleExternalComponent
-  }
-};
+const _sfc_main$6 = {};
 function _sfc_ssrRender(_ctx, _push, _parent, _attrs, $props, $setup, $data, $options) {
   const _component_ExampleExternalComponent = vue.resolveComponent("ExampleExternalComponent");
   _push(serverRenderer.ssrRenderComponent(_component_ExampleExternalComponent, _attrs, null, _parent));
@@ -354,39 +352,25 @@ var External$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProp
 const GlobalMethods = {
   methods: {
     __created: function(v, methods) {
-      const arrAll = Object.keys(v);
       const arrCopy = Object.keys(methods);
       arrCopy.forEach((key) => {
-        const notExist = ___default["default"].findIndex(arrAll, (o) => o === key) === -1;
-        if (notExist)
+        if (typeof v[key] === "undefined")
           v[key] = methods[key];
       });
       const __id = v.guid();
       v.__id = __id;
-      v.__events = ["*"];
-      const bc = new broadcastChannel.BroadcastChannel(__config.event_name);
-      bc.onmessage = v.__eventOnMessage__;
-      v.__bc = bc;
+      if (typeof v["__onMessage"] === "function")
+        __callback.update(__id, v["__onMessage"]);
     },
-    __eventOnMessage__: function(m) {
+    __onMessage: function(m) {
       const v = this;
       if (m) {
-        if (m.id && m.id === __config.event_store) {
-          if (m.name != null && m.name.length > 0 && typeof v[m.name] === "function" && v.__id != m.send_id)
-            v[m.name](m.data);
-        } else if (typeof v["__eventOnMessage"] === "function")
-          v.__eventOnMessage(m);
+        if (v.__id != m.send_id && m.callback != null && m.callback.length > 0 && typeof v[m.callback] === "function")
+          v[m.callback](m);
       }
     },
-    __eventSendMessage: function(data, name) {
-      const v = this, bc = v.__bc;
-      if (bc)
-        bc.postMessage({
-          id: this.guid(),
-          send_id: v.__id,
-          name: name || "*",
-          data
-        });
+    __sendMessage: function(m) {
+      __callback.callNotIds(m, [this.__id]);
     },
     guid: function() {
       return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
@@ -424,9 +408,6 @@ const __default__$3 = {
     msg: String
   },
   mounted: function() {
-    const self = this;
-    self.$nextTick(() => {
-    });
   },
   data() {
     return {
@@ -434,21 +415,29 @@ const __default__$3 = {
     };
   },
   methods: {
-    "storeTest.count": function(newVal) {
-      console.log("PageA.Vue: storeTest.count = ", newVal);
-      this.count = newVal;
+    "*": function(m) {
+      console.log("PageA.Vue: [*] = ", m.data);
     },
-    __eventOnMessage: function(m) {
-      console.log("PageA.Vue: __eventOnMessage = ", m);
+    "storeTest.count": function(m) {
+      console.log("PageA.Vue: storeTest.count = ", m);
+      this.count = m.data;
     },
     send_eventBus: function() {
-      const k = new Date().getTime();
-      this.__eventSendMessage(k);
+      this.__sendMessage({
+        send_id: this.__id,
+        callback: "*",
+        data: new Date().getTime()
+      });
     },
     updateCount: function() {
       const k = new Date().getTime();
       this.count = k;
-      storeTest.updateCount(this, k);
+      storeTest.updateCount({
+        send_id: this.__id,
+        callback: "storeTest.count",
+        type: "",
+        data: k
+      });
     }
   }
 };
@@ -482,21 +471,29 @@ const __default__$2 = {
     };
   },
   methods: {
-    "storeTest.count": function(newVal) {
-      console.log("PageB.Vue: storeTest.count = ", newVal);
-      this.count = newVal;
+    "*": function(m) {
+      console.log("PageB.Vue: [*] = ", m.data);
     },
-    __eventOnMessage: function(m) {
-      console.log("PageB.Vue: __eventOnMessage = ", m);
+    "storeTest.count": function(m) {
+      console.log("PageB.Vue: storeTest.count = ", m);
+      this.count = m.data;
     },
     send_eventBus: function() {
-      const k = new Date().getTime();
-      this.__eventSendMessage(k);
+      this.__sendMessage({
+        send_id: this.__id,
+        callback: "*",
+        data: new Date().getTime()
+      });
     },
     updateCount: function() {
       const k = new Date().getTime();
       this.count = k;
-      storeTest.updateCount(this, k);
+      storeTest.updateCount({
+        send_id: this.__id,
+        callback: "storeTest.count",
+        type: "",
+        data: k
+      });
     }
   }
 };
@@ -531,21 +528,29 @@ const __default__$1 = {
   mounted: function() {
   },
   methods: {
-    "storeTest.count": function(newVal) {
-      console.log("Store.Vue: storeTest.count = ", newVal);
-      this.count = newVal;
+    "*": function(m) {
+      console.log("Store.Vue: [*] = ", m.data);
     },
-    __eventOnMessage: function(m) {
-      console.log("Store.Vue: __eventOnMessage = ", m);
+    "storeTest.count": function(m) {
+      console.log("Store.Vue: storeTest.count = ", m);
+      this.count = m.data;
     },
     send_eventBus: function() {
-      const k = new Date().getTime();
-      this.__eventSendMessage(k);
+      this.__sendMessage({
+        send_id: this.__id,
+        callback: "*",
+        data: new Date().getTime()
+      });
     },
     updateCount: function() {
       const k = new Date().getTime();
       this.count = k;
-      storeTest.updateCount(this, k);
+      storeTest.updateCount({
+        send_id: this.__id,
+        callback: "storeTest.count",
+        type: "",
+        data: k
+      });
     }
   }
 };
@@ -553,7 +558,7 @@ const _sfc_main$3 = /* @__PURE__ */ Object.assign(__default__$1, {
   __ssrInlineRender: true,
   setup(__props) {
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<!--[--><h1 data-v-604d3d76>Store: count = ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button data-v-604d3d76>Update Count</button><button data-v-604d3d76>Send Event</button><!--]-->`);
+      _push(`<!--[--><h1 data-v-e06539fe>Store: count = ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button data-v-e06539fe>Update Count</button><button data-v-e06539fe>Send Event</button><!--]-->`);
     };
   }
 });
@@ -563,7 +568,7 @@ _sfc_main$3.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("src/test/Store.vue");
   return _sfc_setup$3 ? _sfc_setup$3(props, ctx) : void 0;
 };
-var Store = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-604d3d76"]]);
+var Store = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-e06539fe"]]);
 var Store$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   "default": Store
@@ -575,9 +580,6 @@ const __default__ = {
     __setupPages.created(this);
   },
   mounted: function() {
-    const self = this;
-    self.$nextTick(() => {
-    });
   },
   data() {
     return {
@@ -585,21 +587,29 @@ const __default__ = {
     };
   },
   methods: {
-    "storeTest.count": function(newVal) {
-      console.log("Home.Vue: storeTest.count = ", newVal);
-      this.count = newVal;
+    "*": function(m) {
+      console.log("Home.Vue: [*] = ", m.data);
     },
-    __eventOnMessage: function(m) {
-      console.log("Home.Vue: __eventOnMessage = ", m);
+    "storeTest.count": function(m) {
+      console.log("Home.Vue: storeTest.count = ", m);
+      this.count = m.data;
     },
     send_eventBus: function() {
-      const k = new Date().getTime();
-      this.__eventSendMessage(k);
+      this.__sendMessage({
+        send_id: this.__id,
+        callback: "*",
+        data: new Date().getTime()
+      });
     },
     updateCount: function() {
       const k = new Date().getTime();
       this.count = k;
-      storeTest.updateCount(this, k);
+      storeTest.updateCount({
+        send_id: this.__id,
+        callback: "storeTest.count",
+        type: "",
+        data: k
+      });
     }
   }
 };
