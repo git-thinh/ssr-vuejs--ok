@@ -169,10 +169,9 @@ const pages = { "./test/About.vue": () => Promise.resolve().then(function() {
 }) };
 const routes = Object.keys(pages).map((path2) => {
   const name = path2.match(/\.\/test(.*)\.vue$/)[1].toLowerCase();
-  return {
-    path: name === "/home" ? "/" : name,
-    component: pages[path2]
-  };
+  const key = name === "/home" ? "/" : name;
+  const c = pages[path2];
+  return { path: key, component: c };
 });
 function createRouter() {
   return vueRouter.createRouter({
@@ -320,6 +319,48 @@ var External$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProp
   __proto__: null,
   "default": External
 }, Symbol.toStringTag, { value: "Module" }));
+const GlobalMethods = {
+  methods: {
+    guid: function() {
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == "x" ? r : r & 3 | 8;
+        return v.toString(16);
+      });
+    },
+    event_register: function() {
+      new BroadcastChannel(EVENT_BUS__);
+    },
+    event_sendBroadCast: function(name, data) {
+      const bc = new BroadcastChannel(EVENT_BUS__);
+      bc.postMessage({ id: this.eventBusId, name, data });
+    }
+  }
+};
+const __setupComs = {
+  created: function(v) {
+  },
+  mounted: function(v) {
+    if (v) {
+      const fns = Object.keys(GlobalMethods.methods);
+      console.log(fns);
+    }
+  },
+  destroyed: function(v) {
+  },
+  guid: function() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == "x" ? r : r & 3 | 8;
+      return v.toString(16);
+    });
+  },
+  event_register: function() {
+    new BroadcastChannel(EVENT_BUS__);
+  },
+  event_sendBroadCast: function(name, data) {
+    const bc = new BroadcastChannel(EVENT_BUS__);
+    bc.postMessage({ id: this.eventBusId, name, data });
+  }
+};
 const storeVuex = vuex.createStore({
   state() {
     return {
@@ -445,6 +486,13 @@ var Store$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePropert
   "default": Store
 }, Symbol.toStringTag, { value: "Module" }));
 const __default__ = {
+  created: function() {
+  },
+  mounted: function() {
+    __setupComs.mounted(this);
+  },
+  destroyed: function() {
+  },
   data() {
     return {
       count: storeTest.count,
@@ -458,6 +506,11 @@ const __default__ = {
     }
   },
   methods: {
+    send_eventBus: function() {
+      const k = new Date().getTime();
+      const channel = new BroadcastChannel(EVENT_BUS__);
+      channel.postMessage(k);
+    },
     update: function() {
       const k = new Date().getTime();
       this.count = k;
@@ -475,7 +528,7 @@ const _sfc_main$2 = /* @__PURE__ */ Object.assign(__default__, {
   __ssrInlineRender: true,
   setup(__props) {
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<!--[--><h1>Home: ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button>update</button><h1>Store Vuex: ${serverRenderer.ssrInterpolate(_ctx.vx)}</h1><button>update vuex</button><hr>`);
+      _push(`<!--[--><h1>Home: ${serverRenderer.ssrInterpolate(_ctx.count)}</h1><button>update</button><h1>Store Vuex: ${serverRenderer.ssrInterpolate(_ctx.vx)}</h1><button>update vuex</button><button>send_eventBus</button><hr>`);
       _push(serverRenderer.ssrRenderComponent(_sfc_main$5, null, null, _parent));
       _push(`<hr>`);
       _push(serverRenderer.ssrRenderComponent(_sfc_main$4, null, null, _parent));

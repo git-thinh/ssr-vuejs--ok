@@ -1,4 +1,5 @@
 <script setup>
+    import { __setupComs } from '../mixin/__setupComs.js'
     import { storeTest } from '../store/storeTest.js'
     import { storeVuex } from '../store/storeVuex.js'
 
@@ -12,6 +13,7 @@
     <button @click="update">update</button>
     <h1>Store Vuex: {{ vx }}</h1>
     <button @click="update_vx">update vuex</button>
+    <button @click="send_eventBus">send_eventBus</button>
     <hr />
     <PageA></PageA>
     <hr />
@@ -22,6 +24,15 @@
 
 <script>
     export default {
+        created: function () {
+            __setupComs.created(this);
+        },
+        mounted: function () {
+            __setupComs.mounted(this);
+        },
+        destroyed: function () {
+            __setupComs.destroyed(this);
+        },
         data() {
             return {
                 count: storeTest.count,
@@ -35,6 +46,11 @@
             }
         },
         methods: {
+            send_eventBus: function () {
+                const k = new Date().getTime();
+                const channel = new BroadcastChannel(EVENT_BUS__);
+                channel.postMessage(k);
+            },
             update: function () {
                 const k = new Date().getTime();
                 this.count = k;
