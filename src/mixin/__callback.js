@@ -30,6 +30,11 @@ export const __callback = reactive({
             a = _.filter(a, o => items.hasOwnProperty(o) && typeof items[o] === 'function');
             if (notIDs != null && Array.isArray(notIDs) && notIDs.length > 0)
                 a = _.filter(a, o => _.findIndex(notIDs, j => j === o) === -1);
+
+            if (this.app_id
+                && _.findIndex(a, o => o === this.app_id) === -1)
+                a.push(this.app_id);
+
             //console.log(a);
 
             const json = JSON.stringify(m);
