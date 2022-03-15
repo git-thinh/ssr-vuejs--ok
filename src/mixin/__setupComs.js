@@ -5,6 +5,7 @@ export const __setupComs = {
         GlobalMethods.methods.__created(v, GlobalMethods.methods);
     },
     mounted: function (v) {
+        GlobalMethods.methods.__mounted(v);
     },
     destroyed: function (v) {
     }

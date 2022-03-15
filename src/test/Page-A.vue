@@ -13,11 +13,12 @@
     export default {
         destroyed: function () { __setupComs.destroyed(this); },
         created: function () { __setupComs.created(this); },
+        mounted: function () {
+            __setupComs.mounted(this);
+        },
         //--------------------------------------------------------
         props: {
             msg: String
-        },
-        mounted: function () {
         },
         data() {
             return {

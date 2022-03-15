@@ -23,9 +23,10 @@
     export default {
         destroyed: function () { __setupPages.destroyed(this); },
         created: function () { __setupPages.created(this); },
-        //--------------------------------------------------------
         mounted: function () {
+            __setupPages.mounted(this);
         },
+        //--------------------------------------------------------
         data() {
             return {
                 count: storeTest.count

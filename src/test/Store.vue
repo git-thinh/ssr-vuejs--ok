@@ -14,10 +14,11 @@
     export default {
         destroyed: function () { __setupComs.destroyed(this); },
         created: function () { __setupComs.created(this); },
+        mounted: function () {
+            __setupComs.mounted(this);
+        },
         //--------------------------------------------------------
         data: function () { return { count: 555 } },
-        mounted: function () {
-        },
         methods: {
             '*': function (m) {
                 console.log('Store.Vue: [*] = ', m.data);
@@ -39,7 +40,6 @@
                 storeTest.updateCount({
                     send_id: this.__id,
                     callback: 'storeTest.count',
-                    type: '',
                     data: k
                 });
             }

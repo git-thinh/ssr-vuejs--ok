@@ -1,16 +1,22 @@
 ﻿import { GlobalMethods } from './GlobalMethods.js'
+import { __callback } from './__callback.js';
 
 export const MixinApp = {
     mixins: [GlobalMethods],
     created: function () {
-        const v = this;
-        if (window != null && window.__appInited != true) {
-            window.__appInited = true;
-            GlobalMethods.methods.__created(v, GlobalMethods.methods);
+        if (__callback.app_id == null) {
+            GlobalMethods.methods.__created(this, GlobalMethods.methods);
+            __callback.app_id = this.__id;
 
-            console.log('Mixin App: created ...');
+            //console.log('Mixin App: created ...', this.__id);
         }
     },
-    mounted: function () {},
-    destroyed: function () {}
+    mounted: function (v) {
+        if (this.__id) {
+            GlobalMethods.methods.__mounted(this);
+
+            //console.log('Mixin App: mounted ...', this.__id);
+        }
+    },
+    destroyed: function () { }
 }
